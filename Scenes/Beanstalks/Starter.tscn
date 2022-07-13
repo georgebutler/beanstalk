@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=2]
+
+[sub_resource type="SpatialMaterial" id=1]
+params_diffuse_mode = 4
+params_specular_mode = 3
+albedo_color = Color( 0, 0.564706, 0.235294, 1 )
+
+[sub_resource type="CylinderMesh" id=2]
+material = SubResource( 1 )
+height = 0.01
+
+[node name="MeshInstance" type="MeshInstance"]
+mesh = SubResource( 2 )
+material/0 = null

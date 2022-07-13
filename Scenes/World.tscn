@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=2]
+
+[sub_resource type="Environment" id=2]
+ambient_light_color = Color( 0.898039, 0.898039, 0.898039, 1 )
+
+[sub_resource type="CubeMesh" id=1]
+size = Vector3( 16, 1, 16 )
+
+[node name="World" type="Spatial"]
+
+[node name="Environment" type="Spatial" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource( 2 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="Environment"]
+transform = Transform( 0.743145, -0.473147, 0.473147, 0, 0.707107, 0.707107, -0.669131, -0.525483, 0.525483, 0, 0, 0 )
+shadow_enabled = true
+
+[node name="Geometry" type="Spatial" parent="."]
+
+[node name="MeshInstance" type="MeshInstance" parent="Geometry"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0 )
+mesh = SubResource( 1 )
+skeleton = NodePath("../..")
+material/0 = null
