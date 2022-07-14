@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Materials/Grass.tres" type="Material" id=1]
 
 [sub_resource type="Environment" id=2]
 ambient_light_color = Color( 0.898039, 0.898039, 0.898039, 1 )
@@ -23,4 +25,4 @@ shadow_enabled = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0 )
 mesh = SubResource( 1 )
 skeleton = NodePath("../..")
-material/0 = null
+material/0 = ExtResource( 1 )

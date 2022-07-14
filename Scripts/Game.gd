@@ -1,28 +1,48 @@
 extends Node
 
-signal grew
-signal grew_max
+#signal grew
+#signal grew_max
 
-onready var SegmentContainer : Spatial = get_node("SegmentContainer")
 onready var CameraController : Node = get_node("CameraController")
 onready var ShopController : Node = get_node("ShopController")
 onready var UIController : Node = get_node("UIController")
-onready var BeanstalkTween : Tween = get_node("Tween")
 
-var profile = Profile.new()
+var profile : Profile = Profile.new()
 var profile_path = "user://profile.save"
 
-func _unhandled_input(_event) -> void:
-	if Input.is_action_just_pressed("click"):
-		grow(1)
-	elif Input.is_action_just_pressed("sell"):
-		sell()
+var beanstalk_mesh = null
+
+func _ready():
+	# TODO: Load profile
+	# TODO: Make sure profile is valid
+	profile.apply_settings()
+	create_beanstalk_mesh()
 		
-	if Input.is_action_just_pressed("save"):
-		save_game()
-	elif Input.is_action_just_pressed("load"):
-		load_game()
+func create_beanstalk_mesh() -> void:
+	if not beanstalk_mesh == null:
+		beanstalk_mesh.queue_free()
+	beanstalk_mesh = MeshInstance.new()
+	beanstalk_mesh.mesh = CylinderMesh.new()
+	beanstalk_mesh.mesh.height = max(profile.statistics.height, 0.001) * 2
+	beanstalk_mesh.mesh.surface_set_material(0, load(profile.statistics.beanstalk).spatial_material)
+	get_tree().get_root().call_deferred("add_child", beanstalk_mesh)
 		
+func grow(amount : int) -> void:
+	if profile.statistics.height < profile.statistics.height_max:
+		for i in abs(amount):
+			#emit_signal("grew")
+			if profile.statistics.height + 0.001 > profile.statistics.height_max + 0.001:
+				#emit_signal("grew_max")
+				break
+			else:
+				profile.statistics.height += 0.001
+				#beanstalk_mesh.mesh.height = max(profile.statistics.height, 0.001) * 2
+
+func sell() -> void:
+	profile.statistics.money += profile.statistics.height
+	profile.statistics.height = 0.0
+	create_beanstalk_mesh()
+	
 func save_game() -> void:
 	var file = File.new()
 	file.open(profile_path, File.WRITE)
@@ -35,25 +55,4 @@ func load_game() -> void:
 		file.open(profile_path, File.READ)
 		profile = dict2inst(file.get_var())
 		file.close()
-		
-func grow(amount : int) -> void:
-	if profile.statistics.height < profile.statistics.height_max:
-		for i in abs(amount):
-			emit_signal("grew")
-			if profile.statistics.height + 0.001 > profile.statistics.height_max + 0.001:
-				emit_signal("grew_max")
-				break
-			else:
-				profile.statistics.height += 0.001
-				var instance = load(profile.statistics.beanstalk).packed_scene.instance()
-				SegmentContainer.add_child(instance)
-				instance.global_transform.origin = instance.global_transform.origin + Vector3(0, profile.statistics.height, 0)
-				#BeanstalkTween.interpolate_property(instance, "translation", instance.global_transform.origin, instance.global_transform.origin + Vector3(0, profile.statistics.height, 0), 0.2, Tween.TRANS_CUBIC, Tween.EASE_OUT)
-				#BeanstalkTween.start()
-
-func sell() -> void:
-	for child in SegmentContainer.get_children():
-		child.queue_free()
-
-	profile.statistics.money += profile.statistics.height
-	profile.statistics.height = 0
+		profile.apply_settings()
